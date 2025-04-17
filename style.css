@@ -1,0 +1,281 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+.container {
+  max-width: 1100px;
+}
+
+#regions_div {
+  width: 100%;
+  height: 600px;
+  border-radius: 7px;
+}
+
+.info {
+  width: 100%;
+}
+
+.theme-bg {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.weather-card {
+  max-width: 100%;
+  padding: 0 22px 25px 22px;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  color: var(--text-color);
+}
+
+.weather-card h4 {
+  margin-bottom: 10px;
+}
+
+.weather-card p {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
+.forecast-card {
+  min-width: 130px;
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  color: var(--text-color);
+}
+
+.forecast-card:hover {
+  transform: translateY(-4px);
+  background-color: var(--accent-bg);
+  color: var(--accent-text);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+#forecast::-webkit-scrollbar {
+  height: 6px;
+}
+
+#forecast::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+#forecast::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+h4,
+h5,
+label {
+  color: var(--accent-text);
+}
+
+#themeIcon {
+  color: var(--text-color);
+}
+
+/* Light Mode */
+.light-mode {
+  --bg-color: #f8f9fa;
+  --text-color: #212529;
+  --card-bg: #ffffff;
+  --accent-bg: #e8f0fe;
+  --accent-text: #0d6efd;
+  --c-bg: white;
+  --d-bg: #f8f2f2;
+  --et-c: #756b6b;
+  background-color: #eaedef;
+  color: var(--text-color);
+}
+
+/* Dark Mode */
+.dark-mode {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1f1f2e;
+  --accent-bg: #2e335a;
+  --accent-text: #90caf9;
+  --c-bg: #2f2f2f;
+  --d-bg: #3a3a3a;
+  --et-c: #ddcfcf;
+  background-color: #333;
+  color: var(--text-color);
+}
+
+/* Dashboard Layout */
+.containerDB {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: nowrap;
+}
+
+.card {
+  background-color: var(--c-bg);
+  color: var(--text-color);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: none;
+  text-align: center;
+  width: 100%;
+}
+
+/* Time Section */
+.time-card {
+  width: 30%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart {
+  width: 40%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.time-card h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.clock {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.date {
+  font-size: 16px;
+  margin-top: 10px;
+  color: var(--et-c);
+}
+
+/* Weather Flex Card */
+.weather-card {
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.center,
+.left,
+.right {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+}
+
+.temp h1 {
+  font-size: 48px;
+  margin: 0;
+}
+
+.temp p {
+  font-size: 16px;
+  color: var(--et-c);
+}
+
+.sun-times p {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.center h2 {
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+/* Weather Detail Cards */
+.detail {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.detail div {
+  background: var(--d-bg);
+  padding: 12px;
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.detail div:hover {
+  transform: scale(1.05);
+}
+
+.detail i {
+  font-size: 22px;
+  color: var(--text-color);
+  margin-bottom: 5px;
+}
+
+.detail p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-color);
+}
+
+/* Humidity Bars */
+#humidityBars {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.circle {
+  stroke: var(--text-color);
+}
+
+.fill {
+  fill: var(--text-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .containerDB {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .time-card,
+  .weather-card,
+  .chart,
+  .card {
+    width: 100%;
+  }
+
+  #regions_div {
+    height: 450px;
+  }
+
+  .compass-svg {
+    width: 60px;
+    height: 60px;
+    bottom: 15px;
+    left: 20px;
+  }
+}

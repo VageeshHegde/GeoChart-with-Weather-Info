@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GeoChart with Weather Info</title>
+  <link rel="icon" href="glob.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+  <!-- Google Charts Library -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Theme Script (based on time) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggle = document.getElementById("themeToggle");
+      const body = document.body;
+      const label = document.getElementById("themeIcon");
+      const hour = new Date().getHours();
+  
+      // Apply time-based theme on initial load
+      const isDayTime = hour >= 7 && hour < 19;
+      if (isDayTime) {
+        body.classList.add("light-mode");
+        body.classList.remove("dark-mode");
+        toggle.checked = false;
+        // label.textContent = "🌙";
+        label.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      } else {
+        body.classList.add("dark-mode");
+        body.classList.remove("light-mode");
+        toggle.checked = true;
+        // label.textContent = "☀️";
+        label.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      }
+  
+      // Add event listener to toggle
+      // toggle.addEventListener("change", function () {
+      //   body.classList.toggle("dark-mode", this.checked);
+      //   body.classList.toggle("light-mode", !this.checked);
+      // });
+
+      // Theme toggle handler
+    toggle.addEventListener("change", function () {
+      if (this.checked) {
+        body.classList.add("dark-mode");
+        body.classList.remove("light-mode");
+        // label.textContent = "☀️";
+        label.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      } else {
+        body.classList.add("light-mode");
+        body.classList.remove("dark-mode");
+        // label.textContent = "🌙";
+        label.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      }
+    });
+    });
+  </script> 
+</head>
+<body>
+  <div class="container my-4">
+    <!-- <h5 class="text-center mb-4">🌍 Hover over a country to view weather info</h5> -->
+
+    <div class="info ps-3 pe-2 mb-4 rounded shadow theme-bg d-flex align-items-center justify-content-between" style="height: 45px;">
+      <h5 class="mb-0 d-flex align-items-center">
+        🌦️ <span class="ms-2">Weather Dashboard</span>
+      </h5>
+      <div class="form-check form-switch me-2">
+        <input class="form-check-input" type="checkbox" style="cursor: pointer;" id="themeToggle">
+        <label class="form-check-label" for="themeToggle" id="themeIcon" style="cursor: pointer;">🌙</label>
+      </div>
+    </div>      
+
+    <!-- Local Weather and Forecast Section -->
+    <div class="info p-4 rounded shadow theme-bg">
+      <div id="manualSearch" class="mb-3">
+        <label for="cityInput" class="form-label fw-semibold">🔍 Search Weather by City:</label>
+        <div class="input-group">
+          <input type="text" id="cityInput" class="form-control" placeholder="Enter city name" />
+          <button onclick="handleCitySearch()" id="searchBtn" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </div>
+        <!-- <p id="searchMessage" class="mt-2 text-muted small"></p> -->
+        <p id="searchMessage" class="mt-2 text-danger text-center small"></p>
+      </div>
+      
+      <h5 class="text-center" style="margin-top: 1.5rem; margin-bottom: 1rem;" id="weatherTitle">📍 Your Local Weather</h5>
+      <p id="ip" style="text-align: center;"></p>
+      <div class="row" id="geoWeather">
+        <!-- Local Weather Card -->
+        <!-- <div class="col-md-6 mt-4">
+          <div id="geoWeather" class="weather-card"></div>
+        </div> -->
+
+        <!-- 5-Day Forecast Cards -->
+        <!-- <div class="col-md-6 mt-4  p-4">
+          <h4 class="text-center">📅 5-Day Forecast</h4>
+          <div id="forecast" class="d-flex flex-row flex-nowrap overflow-auto gap-3 p-2"></div>
+        </div> -->
+      </div>
+      <div class="containerDB">
+        <!-- Clock Card -->
+        <div class="card time-card">
+          <h2><i id="Icon" class="fas fa-sun"></i> <span id="location">location...</span></h2>
+          <div class="clock" id="clock">09:03:03</div>
+          <!-- <div class="clock" id="localTime">09:03</div> -->
+          <div class="date" id="date">Thursday, 31 Aug</div>
+        </div>
+      
+        <!-- Weather Info Card -->
+        <div class="card weather-card">
+          <div class="left">
+            <div class="temp">
+              <h1 id="temp">loading...</h1>
+              <p>Feels like: <strong id="feelsLike">loading...</strong></p>
+            </div>
+            <div class="sun-times">
+              <p><i class="fas fa-sun"></i> Sunrise<br><span id="Sunrise">loading...</span></p>
+              <p><i class="fas fa-moon"></i> Sunset<br><span id="Sunset">loading...</span></p>
+            </div>
+          </div>
+          <div class="center">
+            <!-- <i id="weatherIcon" class="fas fa-sun"></i> --><h2 id="weatherIcon"></h2>
+            <h2 id="main">loading...</h2>
+          </div>
+          <div class="right">
+            <div class="detail">
+              <div>
+                <i class="fas fa-water"></i>
+                <p><strong id="humidity">loading...</strong><br>Humidity</p>
+              </div>
+              <div>
+                <i class="fas fa-wind"></i>
+                <p><strong id="wind">loading...</strong><br>Wind</p>
+              </div>
+              <div>
+                <i class="fas fa-tachometer-alt"></i>
+                <p><strong id="Pressure">loading...</strong><br>Pressure</p>
+              </div>
+              <div>
+                <i class="fas fa-sun"></i>
+                <p><strong id="uv">loading...</strong><br>Visibility</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <h5 class="text-center" style="margin-top: 1.5rem;">📅 5-Day Forecast</h5> -->
+      <div class="containerDB" style="margin-top: 1.5rem;">
+      <div class="card">
+        <p style="text-align: center;">📅 5-Day Forecast for <strong id="five"></strong></p>
+        <div id="forecast" class="d-flex flex-row flex-nowrap justify-content-evenly overflow-auto gap-3 p-2"></div>
+      </div>
+      <!-- <div class="card chart">
+        <p><i class="fa-solid fa-temperature-high"></i> Temperature Trends</p>
+        <canvas id="tempChart" width="100%" height="auto"></canvas>
+      </div> -->
+      <div class="card chart">
+        <p style="text-align: center;">🌬️ Wind Direction for <strong id="windTitle"></strong></p>
+        <p class="text-center small mt-2">Wind Direction: <strong id="windDirText"></strong></p>
+        <!-- <div id="windGauge"></div> -->
+        <div style="text-align: center;">
+          <svg id="windCompass" width="200" height="200" viewBox="0 0 200 200">
+            <!-- Outer Circle -->
+            <circle cx="100" cy="100" r="90" class="circle" stroke-width="4" fill="none" />
+        
+            <!-- Cardinal Directions -->
+            <text x="95" y="28" font-size="16" font-weight="bold" fill="lightblue">N</text>
+            <text x="170" y="105" font-size="16" font-weight="bold" fill="#28a745">E</text>
+            <text x="95" y="183" font-size="16" font-weight="bold" fill="orange">S</text>
+            <text x="20" y="105" font-size="16" font-weight="bold" fill="red">W</text>
+        
+            <!-- Rotating Needle Group -->
+            <g id="needle" transform="rotate(0, 100, 100)">
+              <!-- North Needle -->
+              <polygon points="100,40 95,100 105,100" fill="red" />
+              <!-- South Needle -->
+              <polygon points="100,160 95,100 105,100" fill="gray" />
+            </g>
+        
+            <!-- Center circle -->
+            <circle cx="100" cy="100" r="5" class="fill" />
+          </svg>
+          <p id="windDirText" class="small mt-2"></p>
+        </div>
+        
+      </div>
+      </div>
+
+      <div class="containerDB" style="margin-top: 1.5rem;">
+        <div class="card" style="flex: 1;">
+          <p><i class="fa-solid fa-water"></i> Humidity Trends Over the Next 5 Days</p>
+          <p class="small" id="humidityTitle">Loading...</p>
+          <div id="humidityBars" class="mt-4"></div>
+        </div>
+        <div class="card" style="flex: 1;">
+          <p><i class="fa-solid fa-temperature-high"></i> Temperature Trends for the Next 5 Days</p>
+          <canvas id="tempChart" width="100%" height="100%"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- <div class="info p-4 rounded shadow theme-bg mt-4" style="margin: auto;">
+    </div> -->
+
+     <!-- GeoChart -->
+     <div class="shadow rounded p-4 mt-4 theme-bg" style="position: relative;">
+        <!-- Visible on md and up -->
+        <h5 class="text-center mb-3 d-none d-md-block">🌍 Hover over a country to view weather info</h5>
+  
+        <!-- Visible only on small screens -->
+        <h5 class="text-center mb-3 d-block d-md-none">🌍 Tap a country to view weather info</h5>
+  
+        <div id="regions_div"></div>
+        <svg width="100" height="100" class="compass-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="position:absolute; bottom:40px; left:55px;">
+          <!-- Outer Circle -->
+          <circle cx="100" cy="100" r="90" stroke="black" stroke-width="4" fill="none" />
+          
+          <!-- Directions Text -->
+          <text x="95" y="25" font-size="16" font-weight="bold">N</text>
+          <text x="170" y="105" font-size="16" font-weight="bold">E</text>
+          <text x="97" y="185" font-size="16" font-weight="bold">S</text>
+          <text x="25" y="105" font-size="16" font-weight="bold">W</text>
+        
+          <!-- Needle -->
+          <!-- North needle (red) -->
+          <polygon points="100,40 95,100 105,100" fill="red" />
+          <!-- South needle (gray) -->
+          <polygon points="100,160 95,100 105,100" fill="gray" />
+        
+          <!-- Center circle -->
+          <circle cx="100" cy="100" r="6" fill="black" />
+        </svg>
+        
+      </div>
+    
+  </div>
+  <!-- Toast container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="weatherToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Heads up!</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body bg-secondary-subtle text-primary">
+      Scroll down to see the interactive geo map. 🌦️
+    </div>
+  </div>
+</div>
+<script>
+  window.addEventListener('load', function () {
+    if (window.innerHeight < 900) {
+      // const toastEl = document.getElementById('weatherToast');
+      // const toast = new bootstrap.Toast(toastEl);
+      // toast.show();
+      alert("Scroll down to see the interactive geo map. 🌦️")
+    }
+  });
+</script>
+  <script>
+    document.getElementById("cityInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      handleCitySearch();
+      this.value = "";
+    }
+    });
+
+    
+  // Click event listener on the search button
+  document.getElementById("searchBtn").addEventListener("click", function () {
+    handleCitySearch();
+    document.getElementById("cityInput").value = ""; // Clear input
+  });
+  </script>
+  <!-- <script>
+    function parseAndIncrementTimeNoSeconds() {
+  const clockEl = document.getElementById("clock");
+  let currentTimeStr = clockEl.textContent.trim(); // e.g., "03:45 PM"
+
+  const [time, period] = currentTimeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  // Convert to 24-hour time
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  // Increment time manually by 1 minute
+  minutes++;
+  if (minutes === 60) {
+    minutes = 0;
+    hours++;
+  }
+  if (hours === 24) {
+    hours = 0;
+  }
+
+  // Convert back to 12-hour format
+  const newPeriod = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+
+  // Format and update the clock
+  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${newPeriod}`;
+  clockEl.textContent = formattedTime;
+}
+
+// Update every 60 seconds
+setInterval(parseAndIncrementTimeNoSeconds, 60000);
+  </script> -->
+  <script>
+    function parseAndIncrementTime() {
+      const clockEl = document.getElementById("clock");
+      let currentTimeStr = clockEl.textContent.trim(); // e.g., "03:45:10 PM"
+  
+      // Convert to 24-hour format for easier logic
+      const [time, period] = currentTimeStr.split(" ");
+      let [hours, minutes, seconds] = time.split(":").map(Number);
+  
+      if (period === "PM" && hours !== 12) hours += 12;
+      if (period === "AM" && hours === 12) hours = 0;
+  
+      // Manually increment time
+      seconds++;
+      if (seconds === 60) {
+        seconds = 0;
+        minutes++;
+      }
+      if (minutes === 60) {
+        minutes = 0;
+        hours++;
+      }
+      if (hours === 24) {
+        hours = 0;
+      }
+  
+      // Convert back to 12-hour format
+      const newPeriod = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+  
+      // Format time
+      const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${newPeriod}`;
+  
+      // Update element
+      clockEl.textContent = formatted;
+    }
+  
+    // Run it every second
+    setInterval(parseAndIncrementTime, 1000);
+  </script>
+  <!-- <script>
+    function updateClock() {
+      const now = new Date();
+      const options = { weekday: 'long', day: 'numeric', month: 'short' };
+  
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      //const date = now.toLocaleDateString('en-US', options);
+  
+      document.getElementById("clock").textContent = time;
+      //document.getElementById("date").textContent = date;
+    }
+  
+    setInterval(updateClock, 1000);
+    updateClock(); // initial call
+  </script> -->
+  <!-- Your Main JS File -->
+  <script src="script.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
